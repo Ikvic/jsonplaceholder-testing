@@ -3,14 +3,14 @@
 const API_URL = 'https://jsonplaceholder.typicode.com';
 
 describe('JSONPlaceholder API', () => {
-    // Тест для получения списка постов
+    // получение списка 
     test('should return a list of posts', async () => {
         const response = await request(API_URL).get('/posts');
         expect(response.statusCode).toBe(200);
         expect(response.body.length).toBeGreaterThan(0);
     });
 
-    // Тест для получения конкретного поста
+    // получение одного конкретного
     test('should return a specific post', async () => {
         const response = await request(API_URL).get('/posts/1');
         expect(response.statusCode).toBe(200);
@@ -18,13 +18,13 @@ describe('JSONPlaceholder API', () => {
         expect(response.body.title).toBeDefined();
     });
 
-    // Тест для проверки 404 для несуществующего поста
+    // Тест для проверки 404
     test('should return a 404 for non-existing post', async () => {
         const response = await request(API_URL).get('/posts/999');
         expect(response.statusCode).toBe(404);
     });
 
-    let postId; // Переменная для хранения ID созданного поста
+    let postId; // Переменная для хранения ID которого создал
 
     // Тест для создания нового поста (POST)
     test('should create a new post', async () => {
@@ -55,13 +55,12 @@ describe('JSONPlaceholder API', () => {
             .put(`/posts/1`) // Используй конкретный ID поста
             .send(updatedPost);
 
-        console.log('Response status code:', response.statusCode); 
-        console.log('Response body:', response.body); 
+        console.log('Response status code:', response.statusCode);
+        console.log('Response body:', response.body);
 
         expect(response.statusCode).toBe(200);
         expect(response.body.title).toBe(updatedPost.title);
     });
-
 
     // Тест для удаления поста (DELETE)
     test('should delete a post', async () => {
@@ -73,5 +72,27 @@ describe('JSONPlaceholder API', () => {
         // Проверяем, что удаленный пост больше не существует
         const getResponse = await request(API_URL).get(`/posts/${postId}`);
         expect(getResponse.statusCode).toBe(404); // Не найдено возвращает 404 Найс Найс
+    });
+
+    // Тест на 401 ошибку
+    test('should return a 401 for unauthorized request', async () => {
+        const response = await request(API_URL)
+            .get('/posts/1') 
+            .set('Authorization', 'InvalidToken'); // Неправильный токен
+        expect(response.statusCode).toBe(401); 
+    });
+
+    // Тест на 403 ошибку
+    test('should return a 403 for forbidden access', async () => {
+        const response = await request(API_URL)
+            .get('/forbidden-resource'); 
+        expect(response.statusCode).toBe(403); 
+    });
+
+    // Тест на 429 ошибку
+    test('should return a 429 for too many requests', async () => {
+        const response = await request(API_URL)
+            .get('/rate-limited-endpoint'); 
+        expect(response.statusCode).toBe(429); 
     });
 });
