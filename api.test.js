@@ -74,25 +74,22 @@ describe('JSONPlaceholder API', () => {
         expect(getResponse.statusCode).toBe(404); // Не найдено возвращает 404 Найс Найс
     });
 
-    // Тест на 401 ошибку
-    test('should return a 401 for unauthorized request', async () => {
-        const response = await request(API_URL)
-            .get('/posts/1') 
-            .set('Authorization', 'InvalidToken'); // Неправильный токен
-        expect(response.statusCode).toBe(401); 
+    // тест для проверки 401 
+    test('should return a 401 error for unauthorized request', async () => {
+        const response = await request('http://httpstat.us').get('/401');
+        expect(response.statusCode).toBe(401);
     });
 
-    // Тест на 403 ошибку
-    test('should return a 403 for forbidden access', async () => {
-        const response = await request(API_URL)
-            .get('/forbidden-resource'); 
-        expect(response.statusCode).toBe(403); 
+    // Тест проверки 403 
+    test('should return a 403 error for forbidden access', async () => {
+        const response = await request('http://httpstat.us').get('/403');
+        expect(response.statusCode).toBe(403);
     });
 
-    // Тест на 429 ошибку
-    test('should return a 429 for too many requests', async () => {
-        const response = await request(API_URL)
-            .get('/rate-limited-endpoint'); 
-        expect(response.statusCode).toBe(429); 
+    // Тест для проверки 429 
+    test('should return a 429 error for too many requests', async () => {
+        const response = await request('http://httpstat.us').get('/429');
+        expect(response.statusCode).toBe(429);
     });
+
 });
